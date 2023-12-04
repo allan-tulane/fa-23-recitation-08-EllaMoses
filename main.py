@@ -12,20 +12,43 @@ def shortest_shortest_path(graph, source):
       a dict where each key is a vertex and the value is a tuple of
       (shortest path weight, shortest path number of edges). See test case for example.
     """
-    ### TODO
-    pass
-    
+    #implement Dijkstra's algorithm with added variable to keep track of edges visited
+    def shortest_shortest_path_helper(visited, frontier):
+        if len(frontier) == 0:
+            return visited
+        else:
+            edges, distance, node = heappop(frontier)
+            if node in visited:
+                return shortest_shortest_path_helper(visited, frontier)
+            else:
+                visited[node] = distance, edges
+                edges += 1 #increase edges by 1 to show that 1 more edge has been visited 
+                for neighbor, weight in graph[node]:
+                    heappush(frontier, (edges, distance + weight, neighbor))
+                return shortest_shortest_path_helper(visited, frontier)
+    frontier = []
+    heappush(frontier,(0, 0, source)) #first variable in tuple keeps track of edges visited
+    visited = dict()
+    return shortest_shortest_path_helper(visited, frontier)
 
-    
-    
 def bfs_path(graph, source):
     """
     Returns:
       a dict where each key is a vertex and the value is the parent of 
       that vertex in the shortest path tree.
     """
-    ###TODO
-    pass
+    parent = dict() #create dictionary to store parent values
+    parent[source] = None #source node has no parent
+    nodes = deque() #queue of nodes
+    nodes.append(source) #add source node to the queue
+    while nodes: #while there are nodes remaining in the queue
+        current = nodes.popleft() #current node is the leftmost node in queue (first loop is for source node)
+        for neighbor in graph[current]: #find all neighbors of current node (for first loop all neighbors of the source node)
+            if neighbor not in parent: #if the neighbor's parent has not already been identified, add it to the dictionary
+                parent[neighbor] = current
+                nodes.append(neighbor) #add neighbor to queue so its children can also be found  
+    return parent
+    
 
 def get_sample_graph():
      return {'s': {'a', 'b'},
@@ -43,6 +66,19 @@ def get_path(parents, destination):
       The shortest path from the source node to this destination node 
       (excluding the destination node itself). See test_get_path for an example.
     """
-    ###TODO
-    pass
+    path = ''
+    for node in parents:
+        if parents[node] is None:
+            source = node
+    current_parent = parents[destination]
+    if current_parent is not None:
+        path = current_parent + path
+    while current_parent is not source:
+        current_parent = parents[current_parent]
+        path = current_parent + path
+    return path
 
+
+graph = get_sample_graph()
+parents = bfs_path(graph, 's')
+print(get_path(parents, 'd'))

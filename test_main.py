@@ -1,4 +1,4 @@
-from main_sol import *
+from main import *
 
 def test_shortest_shortest_path():
 

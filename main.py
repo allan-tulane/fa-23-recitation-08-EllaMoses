@@ -17,17 +17,16 @@ def shortest_shortest_path(graph, source):
         if len(frontier) == 0:
             return visited
         else:
-            edges, distance, node = heappop(frontier)
+            distance, edges, node = heappop(frontier)
             if node in visited:
                 return shortest_shortest_path_helper(visited, frontier)
             else:
                 visited[node] = distance, edges
-                edges += 1 #increase edges by 1 to show that 1 more edge has been visited 
                 for neighbor, weight in graph[node]:
-                    heappush(frontier, (edges, distance + weight, neighbor))
+                    heappush(frontier, (distance + weight, edges + 1, neighbor)) #increase edges by 1 to show that 1 more edge has been visited 
                 return shortest_shortest_path_helper(visited, frontier)
     frontier = []
-    heappush(frontier,(0, 0, source)) #first variable in tuple keeps track of edges visited
+    heappush(frontier,(0, 0, source)) #second variable in tuple keeps track of edges visited
     visited = dict()
     return shortest_shortest_path_helper(visited, frontier)
 
@@ -66,14 +65,14 @@ def get_path(parents, destination):
       The shortest path from the source node to this destination node 
       (excluding the destination node itself). See test_get_path for an example.
     """
-    path = ''
+    path = '' #string of characters 
     for node in parents:
-        if parents[node] is None:
-            source = node
+        if parents[node] == None:
+            source = node #if the node does not have a parent, it is the source node
     current_parent = parents[destination]
-    if current_parent is not None:
+    if current_parent != source: #if the current parent is not the source, update the path  
         path = current_parent + path
-    while current_parent is not source:
+    while current_parent != source: #continue updating parent until source node is reached
         current_parent = parents[current_parent]
         path = current_parent + path
     return path
